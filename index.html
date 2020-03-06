@@ -27,6 +27,14 @@
 		{ date: '2020-02-16', quote: '4.1020' },
 		{ date: '2020-02-17', quote: '4.8972' },
 		{ date: '2020-02-18', quote: '4.1986' },
+		{ date: '2020-03-11', quote: '4.5321' },
+		{ date: '2020-03-12', quote: '4.4575' },
+		{ date: '2020-03-13', quote: '4.3456' },
+		{ date: '2020-03-14', quote: '4.6345' },
+		{ date: '2020-03-15', quote: '4.0182' },
+		{ date: '2020-03-16', quote: '4.1020' },
+		{ date: '2020-03-17', quote: '4.8972' },
+		{ date: '2020-03-18', quote: '4.1986' },
 		{ date: '2020-03-21', quote: '4.5321' },
 		{ date: '2020-03-22', quote: '4.4575' },
 		{ date: '2020-03-23', quote: '4.3456' },
@@ -36,32 +44,47 @@
 		{ date: '2020-03-27', quote: '4.8972' },
 		{ date: '2020-03-28', quote: '4.1986' }
 	];
+	const months = [
+		{ month: 11, year: 2019 },
+		{ month: 12, year: 2019 },
+		{ month: 1, year: 2020 },
+		{ month: 2, year: 2020 },
+		{ month: 3, year: 2020 }
+	];
+	const currentDate = {
+		month: 3,
+		year: 2020
+	};
+
 	function abrirCalendario() {
-		openCalendar({
-			dates: [
-				[2019, 11],
-				[2019, 12],
-				[2020, 1],
-				[2020, 2],
-				[2020, 3]
-			],
-			quotes,
-			currentDate: [2020, 3],
-			clickMonth: date => {
-				updateCalendar({
-					dates: [
-						[2019, 11],
-						[2019, 12],
-						[2020, 1],
-						[2020, 2],
-						[2020, 3]
-					],
-					quotes,
-					currentDate: date
-				})
-			}
-		});
+		openCalendar({ quotes, currentDate });
+		// showLoading();
+		// openCalendar({
+		// 	dates,
+		// 	quotes,
+		// 	currentDate,
+		// 	clickMonth: date => {
+		// 		setTimeout(() => {
+		// 			updateCalendar({
+		// 				dates,
+		// 				quotes,
+		// 				currentDate: date
+		// 			})
+		// 		}, 500);
+		// 	}
+		// });
 	}
-	// abrirCalendario();
+
+	function clickMonth(currentDate) {
+		setCurrentMonth(currentDate);
+		showLoading();
+		setTimeout(() => {
+			drawDays(quotes, currentDate);
+			hideLoading();
+		}, 500);
+	}
+
+	initCalendar(months, clickMonth);
+	abrirCalendario();
 </script>
 </html>
