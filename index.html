@@ -10,81 +10,96 @@
 	<script src="quoteCalendar.js"></script>
 </body>
 <script>
-	const quotes = [
-		{ date: '2020-01-01', quote: '4.5321' },
-		{ date: '2020-01-02', quote: '4.4575' },
-		{ date: '2020-01-03', quote: '4.3456' },
-		{ date: '2020-01-04', quote: '4.6345' },
-		{ date: '2020-01-05', quote: '4.0182' },
-		{ date: '2020-01-06', quote: '4.1020' },
-		{ date: '2020-01-07', quote: '4.8972' },
-		{ date: '2020-01-08', quote: '4.1986' },
-		{ date: '2020-02-11', quote: '4.5321' },
-		{ date: '2020-02-12', quote: '4.4575' },
-		{ date: '2020-02-13', quote: '4.3456' },
-		{ date: '2020-02-14', quote: '4.6345' },
-		{ date: '2020-02-15', quote: '4.0182' },
-		{ date: '2020-02-16', quote: '4.1020' },
-		{ date: '2020-02-17', quote: '4.8972' },
-		{ date: '2020-02-18', quote: '4.1986' },
-		{ date: '2020-03-11', quote: '4.5321' },
-		{ date: '2020-03-12', quote: '4.4575' },
-		{ date: '2020-03-13', quote: '4.3456' },
-		{ date: '2020-03-14', quote: '4.6345' },
-		{ date: '2020-03-15', quote: '4.0182' },
-		{ date: '2020-03-16', quote: '4.1020' },
-		{ date: '2020-03-17', quote: '4.8972' },
-		{ date: '2020-03-18', quote: '4.1986' },
-		{ date: '2020-03-21', quote: '4.5321' },
-		{ date: '2020-03-22', quote: '4.4575' },
-		{ date: '2020-03-23', quote: '4.3456' },
-		{ date: '2020-03-24', quote: '4.6345' },
-		{ date: '2020-03-25', quote: '4.0182' },
-		{ date: '2020-03-26', quote: '4.1020' },
-		{ date: '2020-03-27', quote: '4.8972' },
-		{ date: '2020-03-28', quote: '4.1986' }
-	];
-	const months = [
-		{ month: 11, year: 2019 },
-		{ month: 12, year: 2019 },
-		{ month: 1, year: 2020 },
-		{ month: 2, year: 2020 },
-		{ month: 3, year: 2020 }
-	];
+	const mock = {
+		"issuerDocument": "92.894.922/0001-08",
+		"issuerName": "Banco Original",
+		"rateHistory": [
+			{
+			"expenseTypeRate": "Crédito",
+			"rateDate": "2020-02-14",
+			"conversionRate": 4.1762,
+			"releaseRateDateTime": "2020-02-14T10:30Z"
+			},
+			{
+			"expenseTypeRate": "Crédito",
+			"rateDate": "2020-02-13",
+			"conversionRate": 4.1936,
+			"releaseRateDateTime": "2020-02-13T10:30Z"
+			},
+			{
+			"expenseTypeRate": "Crédito",
+			"rateDate": "2020-02-12",
+			"conversionRate": 4.211,
+			"releaseRateDateTime": "2020-02-12T10:30Z"
+			},
+			{
+			"expenseTypeRate": "Crédito",
+			"rateDate": "2020-02-11",
+			"conversionRate": 4.2284,
+			"releaseRateDateTime": "2020-02-11T10:30Z"
+			},
+			{
+			"expenseTypeRate": "Crédito",
+			"rateDate": "2020-02-10",
+			"conversionRate": 4.2458,
+			"releaseRateDateTime": "2020-02-10T10:30Z"
+			}
+		]
+		};
+	const quotes = [];
+
+	mock.rateHistory.forEach(quote => {
+		console.log(quote);
+		quotes.push({ date: quote.rateDate, quote: quote.conversionRate.toFixed(4) });
+	});
+
+	const months = [];
 	const currentDate = {
 		month: 3,
 		year: 2020
 	};
+	const limitMonth = {
+		month: 2,
+		year: 2020
+	};
+	const today = new Date();
+	today.setMonth(currentDate.month - 1);
+	today.setFullYear(currentDate.year);
+	for (let i = 0; i < 6; i++) {
+		const aux = new Date(today.getTime());
+		aux.setMonth(today.getMonth() - i);
+		if (
+			Number(aux.getFullYear()) >= limitMonth.year &&
+			aux.getMonth() + 1 >= limitMonth.month
+		) {
+			months.push({
+			month: aux.getMonth()+1,
+			year: Number(aux.getFullYear())
+		});
+		}
+	}
+	months.reverse();
+
+	let quoteCalendar;
 
 	function abrirCalendario() {
-		openCalendar({ quotes, currentDate });
-		// showLoading();
-		// openCalendar({
-		// 	dates,
-		// 	quotes,
-		// 	currentDate,
-		// 	clickMonth: date => {
-		// 		setTimeout(() => {
-		// 			updateCalendar({
-		// 				dates,
-		// 				quotes,
-		// 				currentDate: date
-		// 			})
-		// 		}, 500);
-		// 	}
-		// });
+		quoteCalendar = initCalendar(months, clickMonth);
+		if (quoteCalendar.errors.length) {
+			console.log(quoteCalendar.errors)
+		} else {
+			quoteCalendar.calendar.openCalendar({ quotes, currentDate });
+		}
 	}
 
 	function clickMonth(currentDate) {
-		setCurrentMonth(currentDate);
-		showLoading();
+		quoteCalendar.calendar.setCurrentMonth(currentDate);
+		quoteCalendar.calendar.showLoading();
 		setTimeout(() => {
-			drawDays(quotes, currentDate);
-			hideLoading();
+			quoteCalendar.calendar.drawDays(quotes, currentDate);
+			quoteCalendar.calendar.hideLoading();
 		}, 500);
 	}
 
-	initCalendar(months, clickMonth);
 	abrirCalendario();
 </script>
 </html>

@@ -24,12 +24,31 @@ const actions = {
 }
 
 const initCalendar = (months, clickMonth) => {
+	if (!months.length > 0) {
+		return {
+			calendar: null,
+			errors: ['Nenhum mês informado']
+		};
+	}
+	try {
+		if (clickMonth.constructor.name !== Function.constructor.name) {
+			throw '';
+		}
+	} catch (error) {
+		return {
+			calendar: null,
+			errors: ['Função de clique no mês não definido']
+		};
+	}
 	createCalendar();
 	drawMonths(months, clickMonth);
+	return {
+		calendar: QUOTECALENDAR,
+		errors: []
+	};
 };
 
 const openCalendar = ({ quotes, currentDate }) => {
-	actions.clickMonth = clickMonth;
 	drawCalendar();
 	setYear(currentDate.year);
 	setCurrentMonth(currentDate);
@@ -76,7 +95,8 @@ const getDaysList = ({ year, month }, quotes) => {
 	lastDayOfMonth.setMonth(firstDayOfMonth.getMonth() + 1);
 	lastDayOfMonth.setDate(firstDayOfMonth.getDate() - 1);
 	const days = [];
-	for (let i = 0; i < firstDayOfMonth.getDay(); i++) {
+	const jsDays = [6, 0, 1, 2, 3, 4, 5];
+	for (let i = 0; i < jsDays[firstDayOfMonth.getDay()]; i++) {
 		days.push({
 			day: null,
 			value: null
@@ -119,6 +139,7 @@ const setCurrentMonth = currentDate => {
 			element.style.opacity = '0.2';
 		}
 	}
+	setYear(currentDate.year);
 }
 
 const showLoading = () => {
@@ -197,13 +218,8 @@ const createQuoteCalendar = () => {
 
 const createQuoteCalendarClose = () => {
     const element = document.createElement('div');
-    element.innerHTML = 'X';
-    element.style.fontSize = '30px';
     element.style.width = '30px';
     element.style.height = '30px';
-    element.style.fontWeight = 'normal';
-    element.style.textAlign = 'center';
-    element.style.color = 'rgb(25, 173, 71)';
     element.style.display = 'flex';
     element.style.alignItems = 'center';
     element.style.justifyContent = 'center';
@@ -212,6 +228,23 @@ const createQuoteCalendarClose = () => {
     element.style.alignSelf = 'flex-end';
 	element.style.marginBottom = '-30px';
 	element.style.zIndex = '1';
+
+	const line1 = document.createElement('div');
+	line1.style.background = 'rgb(25, 173, 71)';
+    line1.style.width = '25px';
+    line1.style.height = '5px';
+	line1.style.transform = 'rotate(45deg)';
+	line1.style.position = 'absolute';
+	const line2 = document.createElement('div');
+	line2.style.background = 'rgb(25, 173, 71)';
+    line2.style.width = '25px';
+    line2.style.height = '5px';
+	line2.style.transform = 'rotate(-45deg)';
+	line2.style.position = 'absolute';
+
+	element.append(line1);
+	element.append(line2);
+
 	element.setAttribute('can-close', true);
     return element;
 }
@@ -224,6 +257,7 @@ const createQuoteCalendarYear = year => {
     element.style.textAlign = 'center';
 	element.style.color = '#4a4b4a';
 	element.style.userSelect = 'none';
+	element.style.marginTop = '10px';
     return element;
 }
 
@@ -256,11 +290,11 @@ const createQuoteCalendarMonth = (month, full, disabled) => {
 
 const createQuoteCalendarDivider = () => {
 	const element = document.createElement('div');
-	element.width = '80%';
-	element.margin = '0px 10%';
-	element.height = '1px';
-	element.boxSizing = 'border-box';
-	element.background = '#979797';
+	element.style.width = '80%';
+	element.style.margin = '0px 10%';
+	element.style.height = '1px';
+	element.style.boxSizing = 'border-box';
+	element.style.background = 'rgb(195, 195, 195)';
     return element;
 }
 
@@ -402,3 +436,12 @@ const createQuoteCalendarLoading = () => {
 	// 	day.append(document.createElement('div'));
 	// 	element.append(day);
 	// }
+
+const QUOTECALENDAR = {
+	openCalendar: openCalendar,
+	showLoading: showLoading,
+	hideLoading: hideLoading,
+	updateCalendar: updateCalendar,
+	drawDays: drawDays,
+	setCurrentMonth: setCurrentMonth
+}
